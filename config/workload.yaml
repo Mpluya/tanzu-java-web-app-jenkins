@@ -1,18 +1,27 @@
+---
 apiVersion: carto.run/v1alpha1
 kind: Workload
 metadata:
-  name: tanzu-java-web-app-jenkins
   labels:
-    apps.tanzu.vmware.com/workload-type: web
     app.kubernetes.io/part-of: tanzu-java-web-app-jenkins
+    apps.tanzu.vmware.com/has-tests: "true"
+    apps.tanzu.vmware.com/workload-type: web
+  name: tanzu-java-web-app-jenkins
+  namespace: rehan
 spec:
   params:
-  - name: annotations
+  - name: gitops_ssh_secret
+    value: gitops-ssh
+  - name: testing_pipeline_matching_labels
     value:
-      autoscaling.knative.dev/minScale: "1"
+      apps.tanzu.vmware.com/pipeline: jenkins-pipeline
+  - name: testing_pipeline_params
+    value:
+      job-name: poop-pipeline
+      job-params: '[{"name":"GIT_URL","value":"https://github.com/Mpluya/tanzu-java-web-app-jenkins.git"}]'
+      secret-name: jenkins-secret
   source:
     git:
       ref:
         branch: main
-      url: https://github.com/Mpluya/tanzu-java-web-app-jenkins
-    
+      url: ssh://github.com/Mpluya/tanzu-java-web-app-jenkins
